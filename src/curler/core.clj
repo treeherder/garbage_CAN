@@ -18,10 +18,8 @@
 
 ( let [keyworded
   (json/read-str (slurp (format "/tmp/%s.json" summoner_name)) :key-fn keyword)]
-  (println (keyworded :body))))
-
+  (let [body (json/read-str (keyworded :body) :key-fn keyword)] 
+  	(spit (format "/tmp/%s.json" summoner_name) body)) ))
 
 ;; end main
-
 )
-
