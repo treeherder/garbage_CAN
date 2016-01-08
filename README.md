@@ -8,7 +8,7 @@ a  clojure script to get and parse data from the league of legends API.  relies 
 Download from http://packetfire.org/garbage_CAN
 
 ## Usage
- `lein run $league_api_key "treeherder`
+ `lein run $league_api_key "treeherder"`
 
 ## Options
 
