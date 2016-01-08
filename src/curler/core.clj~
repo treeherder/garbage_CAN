@@ -1,0 +1,15 @@
+(ns curler.core
+(:require [clojure.data.json :as json])
+(require [clj-http.client :as client])
+
+(:gen-class) )
+
+(defn -main
+  "I don't do a whole lot ... yet."
+  [api_key summoner_name] 
+  (println "Hello, World!")
+  (println (json/write-str [1 2 3 4 5]))
+ (print (client/get (format "https://na.api.pvp.net/api/lol/na/v1.4/summoner/by-name/%s?api_key=%s" summoner_name api_key)) )
+
+)
+
