@@ -4,8 +4,8 @@
 
 (:gen-class) )
 
-(defn -main
-  "with given parameters, this function will return a page from the league API call"
+(defn get_id
+  "return ID from summoner name"
   [api_key summoner_name] 
 
   (println "posting http GET to league API for relevant data...")
@@ -16,3 +16,10 @@
  	 
  	(println (BODY :id))	
 ))))
+
+(defn -main
+  "put everything together, use the same arguments"
+  [api_key summoner_name]
+  (get_id api_key summoner_name)
+
+ )
