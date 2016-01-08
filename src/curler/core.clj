@@ -7,19 +7,12 @@
 (defn -main
   "with given parameters, this function will return a page from the league API call"
   [api_key summoner_name] 
+
   (println "posting http GET to league API for relevant data...")
 
-;; first take the json from the api
-
-(let [API_DATA (client/get (format "https://na.api.pvp.net/api/lol/na/v1.4/summoner/by-name/%s?api_key=%s" summoner_name api_key))]
- ( spit (format "/tmp/%s.json" summoner_name)  (json/write-str API_DATA))
-
-;; slurp the json
-
-( let [keyworded
-  (json/read-str (slurp (format "/tmp/%s.json" summoner_name)) :key-fn keyword)]
-  (let [body (json/read-str (keyworded :body) :key-fn keyword)] 
-  	(spit (format "/tmp/%s.json" summoner_name) body)) ))
-
-;; end main
-)
+(let [API_DATA (json/write-str (client/get (format "https://na.api.pvp.net/api/lol/na/v1.4/summoner/by-name/%s?api_key=%s" summoner_name api_key)))]
+  (let [PARSED ((json/read-str API_DATA :key-fn keyword) :body)]
+ 	(let [BODY ((json/read-str PARSED :key-fn keyword) (keyword summoner_name))]
+ 	 
+ 	(println (BODY :id))	
+))))
