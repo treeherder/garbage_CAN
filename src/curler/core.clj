@@ -17,14 +17,16 @@
 )
 
 (defn query_game
-	"use summoner ID from name to"
+	"use summoner ID from name to return game id"
 	[summoner_id api_key]
 	(println "using id")
 	(let [api_data (json/write-str (client/get (format "https://na.api.pvp.net/observer-mode/rest/consumer/getSpectatorGameInfo/NA1/%s?api_key=%s" summoner_id api_key)))]
 		(let [parsed ((json/read-str api_data :key-fn keyword) :body)]
-		parsed)))
-
+  			(let [game_id ((json/read-str parsed :key-fn keyword) :gameId)]
+  	  		game_id))))
 (defn -main
   "put everything together, use the same arguments"
   [api_key summoner_name]
-  (println (query_game(by_summoner_name api_key summoner_name) api_key)))
+  (let [game_id (query_game (by_summoner_name api_key summoner_name) api_key)]
+  	(println game_id)
+  ))
