@@ -1,0 +1,7 @@
+http://spectator.na.lol.riotgames.com:8088/observer-mode/rest/featured
+http://spectator.na.lol.riotgames.com:8088/observer-mode/rest/consumer/getGameMetaData/NA1/[gameId]/null
+http://spectator.na.lol.riotgames.com:8088/observer-mode/rest/consumer/getLastChunkInfo/NA1/[gameId]/30000/null
+http://spectator.na.lol.riotgames.com:8088/observer-mode/rest/consumer/getGameDataChunk/NA1/[gameId]/[chunkId]/null
+http://spectator.na.lol.riotgames.com:8088/observer-mode/rest/consumer/endOfGameStats/NA1/[gameId]/null
+
+You replace gameId in these links with a known game id to get the data. The first link will give you a list of games you can test this one. As for getting the game id of a particular player: I'm not sure.
