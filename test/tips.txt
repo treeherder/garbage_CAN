@@ -5,3 +5,7 @@ http://spectator.na.lol.riotgames.com:8088/observer-mode/rest/consumer/getGameDa
 http://spectator.na.lol.riotgames.com:8088/observer-mode/rest/consumer/endOfGameStats/NA1/[gameId]/null
 
 You replace gameId in these links with a known game id to get the data. The first link will give you a list of games you can test this one. As for getting the game id of a particular player: I'm not sure.
+
+http://spectator.na.lol.riotgames.com/observer-mode/rest/consumer/getGameDataChunk/NA1/2064354968/44/token
+
+UtRh7m4FbK9IPPBK4nhlNFhOyB
