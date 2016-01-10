@@ -17,13 +17,20 @@
 )
 
 (defn query_game
-	"use summoner ID from name to return game id"
+	"use summoner ID from name to return collection of relevant game data  ...
+	including other summoners in the game, but most importantly, the encryption key 
+	for the observer stream cypher"
 	[summoner_id api_key]
 	(println "using id")
 	(let [api_data (json/write-str (client/get (format "https://na.api.pvp.net/observer-mode/rest/consumer/getSpectatorGameInfo/NA1/%s?api_key=%s" summoner_id api_key)))]
 		(let [parsed ((json/read-str api_data :key-fn keyword) :body)]
-  			(let [game_id ((json/read-str parsed :key-fn keyword) :gameId)]
-  	  		game_id))))
+      (let[body (json/read-str parsed :key-fn keyword)]
+        	(let [[game_id observer_data :as game_data]
+            [(body :participants)
+            (body :gameId)
+            (body :observers)]]
+
+      game_data)))))
 (defn -main
   "put everything together, use the same arguments"
   [api_key summoner_name]
