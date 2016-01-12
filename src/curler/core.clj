@@ -21,16 +21,19 @@
 	including other summoners in the game, but most importantly, the encryption key 
 	for the observer stream cypher"
 	[summoner_id api_key]
-	(println "using id")
-	(let [api_data (json/write-str (client/get (format "https://na.api.pvp.net/observer-mode/rest/consumer/getSpectatorGameInfo/NA1/%s?api_key=%s" summoner_id api_key)))]
-		(let [parsed ((json/read-str api_data :key-fn keyword) :body)]
-      (let[body (json/read-str parsed :key-fn keyword)]
-        	(let [[game_id observer_data :as game_data]
-            [(body :participants)
-            (body :gameId)
-            (body :observers)]]
-
-      game_data)))))
+  (try
+      (let [api_data (json/write-str (client/get (format "https://na.api.pvp.net/observer-mode/rest/consumer/getSpectatorGameInfo/NA1/%s?api_key=%s" summoner_id api_key)))]
+        (let [parsed ((json/read-str api_data :key-fn keyword) :body)]
+          (let[body (json/read-str parsed :key-fn keyword)]  ;; not sure why this is necessary... seems like json datatype should persist through levels
+              (let [[participants, game_id observer_data :as game_data]
+                [(body :participants)
+                (body :gameId)
+                (body :observers)]]
+         game_data))))
+    (catch Exception e
+      (print "EXCEPT:")
+      (println "no active game")))
+)
 
 
 (defn get_chunk
@@ -42,13 +45,23 @@
 ;;results from the dexrypted / deompressed chunk
 
 
+(defn observer
+  "launch observer client"
+[api_key summoner_name]
 
-
+  (try 
+    (let [game_id (query_game (by_summoner_name api_key summoner_name) api_key)]
+      (println game_id))
+    (catch Exception e
+      (prn "EXCEPT:"))))
 
 
 (defn -main
   "put everything together, use the same arguments"
   [api_key summoner_name]
-  (let [game_id (query_game (by_summoner_name api_key summoner_name) api_key)]
-  	(println game_id)
-  ))
+  (let [game_data (query_game (by_summoner_name api_key summoner_name) api_key)]
+    (let [[participants game_id observers] game_data]
+      ;;(println participants)
+      (println game_id)
+      (println (observers :encryptionKey))
+      )))
