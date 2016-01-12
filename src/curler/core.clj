@@ -31,6 +31,21 @@
             (body :observers)]]
 
       game_data)))))
+
+
+(defn get_chunk
+  "download a chunk"
+  [game_id chunk_num]
+(client/get (format"http://spectator.na.lol.riotgames.com/observer-mode/rest/consumer/getGameDataChunk/NA1/%s/%s/token" game_id chunk_num))
+  )
+;;getting chunks isn't going to help us until we can decode the binary file that 
+;;results from the dexrypted / deompressed chunk
+
+
+
+
+
+
 (defn -main
   "put everything together, use the same arguments"
   [api_key summoner_name]

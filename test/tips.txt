@@ -6,6 +6,15 @@ http://spectator.na.lol.riotgames.com:8088/observer-mode/rest/consumer/endOfGame
 
 You replace gameId in these links with a known game id to get the data. The first link will give you a list of games you can test this one. As for getting the game id of a particular player: I'm not sure.
 
-http://spectator.na.lol.riotgames.com/observer-mode/rest/consumer/getGameDataChunk/NA1/2064354968/44/token
+http://spectator.na.lol.riotgames.com/observer-mode/rest/consumer/getGameDataChunk/NA1/2064301925/15/token
 
 UtRh7m4FbK9IPPBK4nhlNFhOyB
+ keyframe 
+
+
+
+ http://spectator.na.lol.riotgames.com/observer-mode/rest/consumer/getKeyFrame/NA1/2064301925/0/token
+
+ 2064577575
+
+openssl enc -d -base64 -bf-ecb -in key.plain -out keyfile -kfile gameid
