@@ -1,35 +1,33 @@
 # curler
-a  clojure script to get and parse data from the league of legends API.  relies on command line input, using $league_api parameter.
+=============
+##### a stupid name for a stupid project
+---------
+A simple application to create replays from the league of legends API.  
 
 
+##### Installation
+Download from http://treeherder.packetfire.org/garbage_CAN
 
-## Installation
+##### Usage
+api_key:  a string containing your riotgames API key
+summoner_name: a string containing the name of a summoner on NA
 
-Download from http://packetfire.org/garbage_CAN
-
-## Usage
- `lein run $league_api_key "treeherder"`
-
-## Options
-
-FIXME: listing of options this app accepts.
+##### Options
 
 ## Examples
+ `lein run $league_api_key "treeherder"`
+
 
 ...
 
-### Bugs
+### Issues
+as of 1/13/2016:
+----------
+1. haven't implemented automated retreival of chunks + keyframes or endofgame
+2. must implement AMT parsing 
 
 ...
 
 ## License
 
-
-Copyright 2016 brendan reddy-best
-
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+MIT
