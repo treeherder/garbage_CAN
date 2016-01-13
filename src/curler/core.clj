@@ -1,10 +1,12 @@
 
 (ns curler.core
 
-(:require [clojure.data.json :as json])
-(:require [clj-http.client :as client])
-(:require [clojure.string :as strings])
+(:require 
+  [clojure.data.json :as json] 
+  [clj-http.client :as client])
+(use [clojure.java.shell :only [sh]])
 
+ 
 (:gen-class) )
 
 
@@ -50,14 +52,6 @@
 ;;results from the decrypted / decompressed chunk
 
 
-(defn observer
-  "launch observer client"
-  [api_key summoner_name]
-  (try 
-    (let [game_id (query_game (by_summoner_name api_key summoner_name) api_key)]
-      (println game_id))
-    (catch Exception e
-      (prn "EXCEPT:"))))
 
 
 (defn -main
@@ -68,5 +62,8 @@
       ;;(println participants)  ;; this gives us a field will all the current game participants ala lolnexus
       (println )
       (let [base (slurp "resources/windows")]
-          (spit "dev-resources/runme" (format "%s %s %s NA1\"" base (observers :encryptionKey) game_id))
-          ))))
+        (spit (format "resources/%s.bat" summoner_name) (format "%s %s %s NA1\"" base (observers :encryptionKey) game_id)))
+        (try
+          (sh (format "resources/%s.bat" summoner_name))
+          (catch Exception e
+            (prn e))))))
