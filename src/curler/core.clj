@@ -5,8 +5,6 @@
   [clojure.data.json :as json] 
   [clj-http.client :as client])
 (use [clojure.java.shell :only [sh]])
-
- 
 (:gen-class) )
 
 
@@ -15,12 +13,16 @@
   [api_key summoner_name] 
 
   (println "posting http GET to league API for relevant data...")
+  (try
+    (let [api_data (json/write-str (client/get 
+      (format "https://na.api.pvp.net/api/lol/na/v1.4/summoner/by-name/%s?api_key=%s" summoner_name api_key)))]
+      (let [parsed ((json/read-str api_data :key-fn keyword) :body)]
+ 	      (let [body ((json/read-str parsed :key-fn keyword) (keyword summoner_name))]
+ 	        (let [sum_id (body :id)](println (format "got id  %s" sum_id)) sum_id))))
+  (catch Exception e
+    (print "EXCEPT:")
+    (println "no summoner by that name, try removing spaces")))  ;;this needs a method to check for spaces in the string
 
-(let [api_data (json/write-str (client/get 
-  (format "https://na.api.pvp.net/api/lol/na/v1.4/summoner/by-name/%s?api_key=%s" summoner_name api_key)))]
-  (let [parsed ((json/read-str api_data :key-fn keyword) :body)]
- 	(let [body ((json/read-str parsed :key-fn keyword) (keyword summoner_name))]
- 	(let [sum_id (body :id)](println (format "got id  %s" sum_id)) sum_id))))
 )
 
 (defn query_game
@@ -51,36 +53,39 @@
       (let [api_data (json/write-str (client/get 
         (format "http://spectator.na.lol.riotgames.com/observer-mode/rest/consumer/getLastChunkInfo/NA1/%s/1/token" game_id)))]
         (let [parsed ((json/read-str api_data :key-fn keyword) :body)]
-              (println parsed)))
+              parsed))
     (catch Exception e
       (print "EXCEPT:")
-      (println "no active game")))
-)
+      (println "last frame not saved"))))
 
 
 
 (defn get_replay
   "download a chunk + keyframe "
-  [game_id chunk_num] 
-  (client/get (format "http://spectator.na.lol.riotgames.com/observer-mode/rest/consumer/getGameDataChunk/NA1/%s/%s/token" game_id chunk_num)))
+  [game_id chunk_num]
+  (let [chunk_64 ] (client/get (format "http://spectator.na.lol.riotgames.com/observer-mode/rest/consumer/getGameDataChunk/NA1/%s/%s/token" game_id chunk_num)))
+  (let [key_frame_64   (client/get (format "https://na.api.pvp.net/observer-mode/rest/consumer/getKeyFrame/NA1/%s/%s/token" game_id chunk_num))])
+)
 ;;getting chunks isn't going to help us until we can decode the binary file that 
 ;;results from the decrypted / decompressed chunk
 
 
 
 (defn start_observer
-  "launch observer client from command line using batch file"
+  "launch observer client from command line using batch file  currently only available for windows, easy enough to apply to osX"
   [summoner_name]
   (try
     (sh (format "resources/%s.bat" summoner_name))
   (catch Exception e
     (prn e))))
 
+
 (defn -main
   "save all the data as distinct files .. needs a file creation system"
   [api_key summoner_name]
   (let [game_data (query_game (by_summoner_name api_key summoner_name) api_key)]
     (let [[participants game_id observers] game_data]
+      ;;write the data to files for debugging + analysis
       (spit (format "resources/%s-participants" game_id) participants)  ;; this gives us a field will all the current game participants ala lolnexus
       (spit (format "resources/%s-lastchunk.json" game_id) (last_chunk game_id))
 
