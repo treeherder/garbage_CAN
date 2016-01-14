@@ -63,7 +63,7 @@
 (defn get_replay
   "download a chunk + keyframe "
   [game_id chunk_num]
-  (let [chunk_64 ] (client/get (format "http://spectator.na.lol.riotgames.com/observer-mode/rest/consumer/getGameDataChunk/NA1/%s/%s/token" game_id chunk_num)))
+  (let [chunk_64  (client/get (format "http://spectator.na.lol.riotgames.com/observer-mode/rest/consumer/getGameDataChunk/NA1/%s/%s/token" game_id chunk_num))])
   (let [key_frame_64   (client/get (format "https://na.api.pvp.net/observer-mode/rest/consumer/getKeyFrame/NA1/%s/%s/token" game_id chunk_num))])
 )
 ;;getting chunks isn't going to help us until we can decode the binary file that 
