@@ -58,14 +58,22 @@
       (print "EXCEPT:")
       (println "last frame not saved"))))
 
-
+(defn parse_last_chunk
+  "parse last_chunk json for the relecant data"
+    [somearg]
+ (print ("hi"))
+  )
 
 (defn get_replay
   "download a chunk + keyframe "
-  [game_id chunk_num]
-  (let [chunk_64  (client/get (format "http://spectator.na.lol.riotgames.com/observer-mode/rest/consumer/getGameDataChunk/NA1/%s/%s/token" game_id chunk_num))])
-  (let [key_frame_64   (client/get (format "https://na.api.pvp.net/observer-mode/rest/consumer/getKeyFrame/NA1/%s/%s/token" game_id chunk_num))])
-)
+  [game_id  kf_num chunk_num]
+  ;;first get last chunk data from game to calibrate the next few calls 
+(try
+  (let [chunk_64  (client/get (format "http://spectator.na.lol.riotgames.com/observer-mode/rest/consumer/getGameDataChunk/NA1/%s/%s/token" game_id chunk_num))]
+    (spit "resources/kf-%s-%s-64" ))
+  (let [keyframe_64   (client/get (format "https://na.api.pvp.net/observer-mode/rest/consumer/getKeyFrame/NA1/%s/%s/token" game_id chunk_num))])
+  (catch Exception e
+    (prn e))))
 ;;getting chunks isn't going to help us until we can decode the binary file that 
 ;;results from the decrypted / decompressed chunk
 
@@ -86,10 +94,10 @@
   (let [game_data (query_game (by_summoner_name api_key summoner_name) api_key)]
     (let [[participants game_id observers] game_data]
       ;;write the data to files for debugging + analysis
-      (spit (format "resources/%s-participants" game_id) participants)  ;; this gives us a field will all the current game participants ala lolnexus
-      (spit (format "resources/%s-lastchunk.json" game_id) (last_chunk game_id))
+      ;;(spit (format "resources/%s-participants" game_id) participants)  ;; this gives us a field will all the current game participants ala lolnexus
+      ;;(spit (format "resources/%s-lastchunk.json" game_id) (last_chunk game_id))
 
-      (let [base (slurp "resources/windows")]
-        (spit (format "resources/%s.bat" summoner_name) (format "%s %s %s NA1\"" base (observers :encryptionKey) game_id)))
+      ;;(let [base (slurp "resources/windows")]
+        ;;(spit (format "resources/%s.bat" summoner_name) (format "%s %s %s NA1\"" base (observers :encryptionKey) game_id)))
         
   )))
