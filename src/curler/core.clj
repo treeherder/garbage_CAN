@@ -20,7 +20,7 @@
   (format "https://na.api.pvp.net/api/lol/na/v1.4/summoner/by-name/%s?api_key=%s" summoner_name api_key)))]
   (let [parsed ((json/read-str api_data :key-fn keyword) :body)]
  	(let [body ((json/read-str parsed :key-fn keyword) (keyword summoner_name))]
- 	(let [sum_id (body :id)](println "got id") sum_id))))
+ 	(let [sum_id (body :id)](println (format "got id  %s" sum_id)) sum_id))))
 )
 
 (defn query_game
@@ -44,8 +44,23 @@
 )
 
 
-(defn get_chunk
-  "download a chunk"
+(defn last_chunk
+  "read data from last chunk call to get current keyframe and chunks"
+  [game_id]
+  (try
+      (let [api_data (json/write-str (client/get 
+        (format "http://spectator.na.lol.riotgames.com/observer-mode/rest/consumer/getLastChunkInfo/NA1/%s/1/token" game_id)))]
+        (let [parsed ((json/read-str api_data :key-fn keyword) :body)]
+              (println parsed)))
+    (catch Exception e
+      (print "EXCEPT:")
+      (println "no active game")))
+)
+
+
+
+(defn get_replay
+  "download a chunk + keyframe "
   [game_id chunk_num] 
   (client/get (format "http://spectator.na.lol.riotgames.com/observer-mode/rest/consumer/getGameDataChunk/NA1/%s/%s/token" game_id chunk_num)))
 ;;getting chunks isn't going to help us until we can decode the binary file that 
@@ -53,17 +68,23 @@
 
 
 
+(defn start_observer
+  "launch observer client from command line using batch file"
+  [summoner_name]
+  (try
+    (sh (format "resources/%s.bat" summoner_name))
+  (catch Exception e
+    (prn e))))
 
 (defn -main
-  "put everything together, use the same arguments"
+  "save all the data as distinct files .. needs a file creation system"
   [api_key summoner_name]
   (let [game_data (query_game (by_summoner_name api_key summoner_name) api_key)]
     (let [[participants game_id observers] game_data]
-      ;;(println participants)  ;; this gives us a field will all the current game participants ala lolnexus
-      (println )
+      (spit (format "resources/%s-participants" game_id) participants)  ;; this gives us a field will all the current game participants ala lolnexus
+      (spit (format "resources/%s-lastchunk.json" game_id) (last_chunk game_id))
+
       (let [base (slurp "resources/windows")]
         (spit (format "resources/%s.bat" summoner_name) (format "%s %s %s NA1\"" base (observers :encryptionKey) game_id)))
-        (try
-          (sh (format "resources/%s.bat" summoner_name))
-          (catch Exception e
-            (prn e))))))
+        
+  )))
