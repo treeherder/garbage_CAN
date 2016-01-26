@@ -1,20 +1,31 @@
 
 (ns curler.core
 
-(:require 
-  [clojure.data.json :as json] 
+(:require
+  [clojure.data.json :as json]
   [clj-http.client :as client])
 (use [clojure.java.shell :only [sh]])
 (:gen-class) )
 
 
+
+
+(try
+  (let [body  (json/write-str (client/get
+                      (format "https://na.api.pvp.net/observer-mode/rest/featured?api_key=%s" api_key)))]
+    ;; get response-body gameList/participants/summonerName
+    )
+  )
+
+
+
 (defn by_summoner_name
   "return ID from summoner name"
-  [api_key summoner_name] 
+  [api_key summoner_name]
 
   (println "posting http GET to league API for relevant data...")
   (try
-    (let [api_data (json/write-str (client/get 
+    (let [api_data (json/write-str (client/get
       (format "https://na.api.pvp.net/api/lol/na/v1.4/summoner/by-name/%s?api_key=%s" summoner_name api_key)))]
       (let [parsed ((json/read-str api_data :key-fn keyword) :body)]
  	      (let [body ((json/read-str parsed :key-fn keyword) (keyword summoner_name))]
@@ -27,11 +38,11 @@
 
 (defn query_game
 	"use summoner ID from name to return collection of relevant game data  ...
-	including other summoners in the game, but most importantly, the encryption key 
+	including other summoners in the game, but most importantly, the encryption key
 	for the observer stream cypher"
 	[summoner_id api_key]
   (try
-      (let [api_data (json/write-str (client/get 
+      (let [api_data (json/write-str (client/get
         (format "https://na.api.pvp.net/observer-mode/rest/consumer/getSpectatorGameInfo/NA1/%s?api_key=%s" summoner_id api_key)))]
         (let [parsed ((json/read-str api_data :key-fn keyword) :body)]
           (let[body (json/read-str parsed :key-fn keyword)]  ;; not sure why this is necessary... seems like json datatype should persist through levels
@@ -50,7 +61,7 @@
   "read data from last chunk call to get current keyframe and chunks"
   [game_id]
   (try
-      (let [api_data (json/write-str (client/get 
+      (let [api_data (json/write-str (client/get
         (format "http://spectator.na.lol.riotgames.com/observer-mode/rest/consumer/getLastChunkInfo/NA1/%s/1/token" game_id)))]
         (let [parsed ((json/read-str api_data :key-fn keyword) :body)]
               parsed))
@@ -67,14 +78,14 @@
 (defn get_replay
   "download a chunk + keyframe "
   [game_id  kf_num chunk_num]
-  ;;first get last chunk data from game to calibrate the next few calls 
+  ;;first get last chunk data from game to calibrate the next few calls
 (try
   (let [chunk_64  (client/get (format "http://spectator.na.lol.riotgames.com/observer-mode/rest/consumer/getGameDataChunk/NA1/%s/%s/token" game_id chunk_num))]
     (spit "resources/kf-%s-%s-64" ))
   (let [keyframe_64   (client/get (format "https://na.api.pvp.net/observer-mode/rest/consumer/getKeyFrame/NA1/%s/%s/token" game_id chunk_num))])
   (catch Exception e
     (prn e))))
-;;getting chunks isn't going to help us until we can decode the binary file that 
+;;getting chunks isn't going to help us until we can decode the binary file that
 ;;results from the decrypted / decompressed chunk
 
 
@@ -99,5 +110,5 @@
 
       ;;(let [base (slurp "resources/windows")]
         ;;(spit (format "resources/%s.bat" summoner_name) (format "%s %s %s NA1\"" base (observers :encryptionKey) game_id)))
-        
+
   )))
